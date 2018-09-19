@@ -22,19 +22,16 @@ public class battleStart {
                 if(monster.hitPoint > 0){
                     monsterAttack(player, monster);
                 }
-                else {
-                    System.out.println("The monster was defeated.");
-                }
+                else System.out.println("The monster was defeated.");
 
             }
 
             else if(action == 2){
-                System.out.println("You examine the monster. It appears to have "+monster.hitPoint+ " HP.");
+                int monsterHP = examine(monster);
+                System.out.println("It appears to have " +monsterHP+ " HP.");
             }
 
-            else {
-                System.out.println("You ran away! Maybe another day you'll defeat it...");
-            }
+            else System.out.println("You ran away! Maybe another day you'll defeat it...");
         }
         if(player.hitPoint <= 0){
             System.out.println("Hogh...you draw your last breath at the monster's final blow...");
@@ -43,17 +40,20 @@ public class battleStart {
 
     }
 
-    private void playerAttack(Player player, Monster monster) {
-        monster.hitPoint -= player.damage;
-        System.out.println("You attacked the monster! You dealt "+player.damage +" damage!");
+    private void playerAttack(Player p, Monster m) {
+        m.hitPoint -= p.damage;
+        System.out.println("You attacked the monster! You dealt "+p.damage +" damage!");
     }
 
-    private void monsterAttack(Player player, Monster monster) {
-        player.hitPoint -= monster.damage;
-        System.out.println("Monster attacked for "+monster.damage + " damage!");
+    private void monsterAttack(Player p, Monster m) {
+        p.hitPoint -= m.damage;
+        System.out.println("Monster attacked for "+m.damage + " damage!");
     }
 
-
+    private int examine(Monster m){
+        System.out.println("You examine the monster.");
+        return m.hitPoint;
+    }
     public static void main(String[] args) {
         new battleStart();
     }
