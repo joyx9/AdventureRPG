@@ -20,4 +20,5 @@ public class TestLoadable {
         assertEquals(8, loadTeam.getPlayer(1).getHitPoint());
         assertEquals(4, loadTeam.getPlayer(2).getDamage());
     }
+
 }
