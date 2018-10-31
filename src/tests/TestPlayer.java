@@ -22,6 +22,7 @@ public class TestPlayer {
         assertEquals(1, p.getDamage());
         assertEquals(1, p.getSpeed());
         assertEquals("test", p.getName());
+        assertEquals(1, p.getMaxHP());
     }
 
     @Test

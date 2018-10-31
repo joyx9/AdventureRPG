@@ -1,9 +1,11 @@
 package ui;
 
 
+import model.Inventory;
 import model.ListOfPlayers;
 import model.Monster;
 import model.Player;
+import ui.exceptions.HPOutOfBoundsException;
 
 import java.util.Scanner;
 
@@ -14,11 +16,15 @@ public class Battle {
     private int damage = 0;
     private int hitPoint = 0;
 
-    //TODO: find out how to do a proper RPG style turn input of players :/
-    public Battle(ListOfPlayers team) {
-        Monster monster = new Monster("Slime", 20,4,2);
+    private Inventory inventory;
+    private Monster monster;
+    private Player yourPlayer;
 
-        Player yourPlayer = team.getPlayer(1);
+    //TODO: find out how to do a proper RPG style turn input of players :/
+    public Battle(ListOfPlayers team, GamePath data) throws HPOutOfBoundsException {
+        monster = new Monster("Slime", 20,2,2);
+
+        yourPlayer = team.getPlayer(1);
         team.sortBySpeed();
 
         int action = 0;
@@ -75,10 +81,20 @@ public class Battle {
                             }
 
                         }
-
+                        //chose heal option
                         else {
-                            currentPlayer.playerHeal(currentPlayer, yourPlayer);
-                            monster.attack(currentPlayer, monster);
+                            try{
+                                currentPlayer.playerHeal(yourPlayer);
+                            }
+                            catch(HPOutOfBoundsException e) {
+                                System.out.println(yourPlayer.getName() + " was healed for " +
+                                        Integer.toString(yourPlayer.getMaxHP() - yourPlayer.getHitPoint()) +
+                                        " points!");
+                                yourPlayer.setHitPoint(yourPlayer.getMaxHP());
+                            }
+                            finally{
+                                monster.attack(currentPlayer, monster);
+                            }
                         }
                     }
                     if (!currentPlayer.isAlive()) {
@@ -89,10 +105,19 @@ public class Battle {
             }
         }
 
+
         if(!yourPlayer.isAlive()){
             System.out.println("(Hogh...you draw your last breath at the monster's final blow...)");
             System.out.println("(Should've stayed in school...)");
         }
+
+        if(monster.getHitPoint() < 0){
+            inventory = data.getInventory();
+            inventory.addItem(monster.getMonsterDrop());
+            System.out.println("You found " + (monster.getMonsterDrop()).getItemName() + "!");
+        }
+
+
 
     }
 

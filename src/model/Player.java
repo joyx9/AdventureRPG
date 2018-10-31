@@ -1,5 +1,7 @@
 package model;
 
+import ui.exceptions.HPOutOfBoundsException;
+
 public class Player extends Entity{
 
     // REQUIRES: all int values > 0
@@ -8,10 +10,7 @@ public class Player extends Entity{
         super(name,hitPoint,damage,speed);
     }
 
-    //TODO: HP should not go above original set HP
-    public void setHitPoint(int hitPoint) {
-        this.hitPoint = hitPoint;
-    }
+
 
     // MODIFIES: m
     // EFFECTS: monsters hp lowers by value of player's attack
@@ -20,18 +19,24 @@ public class Player extends Entity{
     public void attack(Player p, Monster m) {
         //generate random damage for attack
         this.damage = p.getDamage() + 1 + rm.nextInt(6);
-        m.hitPoint -= this.damage;
+        m.setHitPoint(m.getHitPoint()-this.damage);
         System.out.println(p.getName()+" attacked the monster! Dealt " + this.damage +" damage!");
     }
 
     // MODIFIES: healed
-    // EFFECTS: healer player increases hp of healed player by heal value
+    // EFFECTS: healer player increases hp of healed player by heal value if healed player's HP does not go over maxHP
+    //          otherwise, throws HPOutOfBoundsException
     //          heal value is healer's base damage + 1d4
-    public void playerHeal(Player healer, Player healed) {
-        int heal = healer.getDamage() + 1 + rm.nextInt(4);
-        healed.setHitPoint(healed.getHitPoint() + heal);
+    public void playerHeal(Player healed) throws HPOutOfBoundsException {
+        int heal = this.getDamage() + 1 + rm.nextInt(4);
 
+        if(healed.getHitPoint() + heal > healed.getMaxHP()){
+            throw new HPOutOfBoundsException();
+        }
+        healed.setHitPoint(healed.getHitPoint() + heal);
         System.out.println(healed.getName() +" was healed for " + heal + " points!");
+
+
     }
 
     // EFFECTS: returns monster's hp and name in dialogue

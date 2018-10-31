@@ -2,10 +2,11 @@ package model;
 
 
 public class Monster extends Entity{
-
+    private Item monsterDrop;
 
     public Monster(String name, int hitPoint, int damage, int speed) {
         super(name, hitPoint, damage, speed);
+        monsterDrop = new Item("Green Jello", "Looks tasty!", "Monster Drops");
     }
 
     // MODIFIES: p
@@ -14,10 +15,11 @@ public class Monster extends Entity{
     @Override
     public void attack(Player p, Monster m) {
         this.damage = m.damage + 1 + rm.nextInt(4);
-        this.hitPoint = p.getHitPoint();
-        this.hitPoint -= this.damage;
-        p.setHitPoint(this.hitPoint);
-
+        p.setHitPoint(p.getHitPoint() - this.damage);
         System.out.println("Monster attacked " + p.getName() + " for " + this.damage + " damage!");
+    }
+
+    public Item getMonsterDrop(){
+        return monsterDrop;
     }
 }
