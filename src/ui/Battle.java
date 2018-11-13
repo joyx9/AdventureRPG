@@ -16,7 +16,6 @@ public class Battle {
     private int damage = 0;
     private int hitPoint = 0;
 
-    private Inventory inventory;
     private Monster monster;
     private Player yourPlayer;
 
@@ -107,8 +106,7 @@ public class Battle {
 
 
         if(!yourPlayer.isAlive()){
-            System.out.println("(Hogh...you draw your last breath at the monster's final blow...)");
-            System.out.println("(Should've stayed in school...)");
+
         }
 
         if(monster.getHitPoint() < 0){

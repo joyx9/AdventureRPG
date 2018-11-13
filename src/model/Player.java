@@ -18,9 +18,9 @@ public class Player extends Entity{
     @Override
     public void attack(Player p, Monster m) {
         //generate random damage for attack
-        this.damage = p.getDamage() + 1 + rm.nextInt(6);
-        m.setHitPoint(m.getHitPoint()-this.damage);
-        System.out.println(p.getName()+" attacked the monster! Dealt " + this.damage +" damage!");
+        int damage = p.getDamage() + 1 + rm.nextInt(6);
+        m.setHitPoint(m.getHitPoint()-damage);
+        System.out.println(p.getName()+" attacked the monster! Dealt " + damage +" damage!");
     }
 
     // MODIFIES: healed

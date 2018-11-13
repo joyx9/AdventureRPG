@@ -11,6 +11,7 @@ public class Inventory {
     private Map<String, ArrayList<Item>> itemMap;
     private ArrayList<Item> keyItems;
     private ArrayList<Item> monsterDrops;
+    private MainPlayer yourPlayer;
 
     public Inventory(){
         itemMap = new HashMap<String, ArrayList<Item>>();
@@ -28,6 +29,7 @@ public class Inventory {
     public void addItem(Item item){
         String category = item.getItemCategory();
         ArrayList<Item> items;
+
         if(!itemMap.containsKey(category)){
             // creates new category of items
             items = new ArrayList<Item>();
@@ -35,18 +37,22 @@ public class Inventory {
             itemMap.put(category, items);
         }
         else{
+            Item initial = new Item("", "", category);
+
             items = itemMap.get(category);
             items.add(item);
-            for(Item i : items){
-                if(i.getItemName().equals("")){
-                    items.remove(i);
-                }
+            if(isInMap(initial, category)){
+                items.remove(initial);
             }
 
             // category already exists
         }
     }
 
+    public boolean isInMap(Item item, String categoryName){
+        ArrayList<Item> items = itemMap.get(categoryName);
+        return items.contains(item);
+    }
 
     public void print() {
         for (Map.Entry<String, ArrayList<Item>> i : itemMap.entrySet()) {
@@ -54,6 +60,10 @@ public class Inventory {
             for (Item item : itemsInCategory)
                 System.out.println(i.getKey() + ": " + item.getItemName());
         }
+    }
+
+    public void setInventory(){
+        if(yourPlayer.a)
     }
 
     public void checkInventory(){

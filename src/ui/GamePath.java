@@ -1,9 +1,6 @@
 package ui;
 
-import model.Inventory;
-import model.Item;
-import model.ListOfPlayers;
-import model.Player;
+import model.*;
 import ui.exceptions.HPOutOfBoundsException;
 
 import java.io.*;
@@ -15,11 +12,12 @@ public class GamePath{
     Scanner scannerStr = new Scanner(System.in);
 
     private ListOfPlayers team;
-    private Player yourPlayer;
+    private MainPlayer yourPlayer;
     private String yourName;
     private int move = 0;
     private int confirm;
-    private Inventory inventory = new Inventory();
+    private Inventory inventory;
+
 
     public GamePath() throws IOException, HPOutOfBoundsException {
         team = new ListOfPlayers();
@@ -33,13 +31,15 @@ public class GamePath{
             Player friendEve = new Player("Eve", 15,3,3);
             team.addPlayer(friendEve);
 
+
+
             System.out.println("???: Hello, adventurer! Welcome to your first day of exploration!");
             System.out.println("Eve: My name's Eve. I'll be helping you along the way today.");
             System.out.println("Eve: What's your name?");
 
             yourName = scannerStr.nextLine();
 
-            yourPlayer = new Player(yourName, 10,2,2);
+            yourPlayer = new MainPlayer(yourName, 10,2,2);
             team.addPlayer(yourPlayer);
 
             System.out.println("Eve: Hi " + yourName +"! Remember, there are quite a few monsters about, " +
@@ -61,7 +61,7 @@ public class GamePath{
             }
             else if(move == 3){
                 if (inventory != null){
-                    inventory.checkInventory();
+                    yourPlayer.getInventory().checkInventory();
                 }
             }
             else{
@@ -80,21 +80,18 @@ public class GamePath{
             System.out.println("Eve: Oops. Let's try that again.");
         }
 
-        System.out.println("(What would you like to do?) [1] Save [2] Check Inventory [3] End");
+        System.out.println("(What would you like to do?) [1] Save [2] End [3] Check Inventory");
         confirm = scannerInt.nextInt();
         if(confirm == 1) {
             team.saveGame("src/saveFile");
         }
-        else if(confirm == 2){
+        else if(confirm == 3){
             inventory.checkInventory();
         }
 
     }
 
 
-    public Inventory getInventory(){
-        return inventory;
-    }
 
     public void initialInventory(){
         inventory.addItem(new Item("Chipped Sword",
