@@ -33,7 +33,7 @@ public class Item {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Item item = (Item) o;
+        model.Item item = (model.Item) o;
         return Objects.equals(itemName, item.itemName) &&
                 Objects.equals(description, item.description) &&
                 Objects.equals(itemCategory, item.itemCategory);

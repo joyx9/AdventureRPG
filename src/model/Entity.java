@@ -3,13 +3,14 @@ package model;
 import java.util.Random;
 
 abstract public class Entity {
-    protected int hitPoint;
-    protected int damage;
-    protected int speed;
-    protected String name;
-    protected int maxHP;
+    private int hitPoint;
+    private int damage;
+    private int speed;
+    private String name;
+    private int maxHP;
+    private int action;
 
-    Random rm = new Random();
+    protected Random rm = new Random();
 
 
     public Entity(String name, int hitPoint, int damage, int speed){
@@ -19,6 +20,7 @@ abstract public class Entity {
         this.name = name;
 
         maxHP = hitPoint;
+        action = 0;
     }
 
     public String getName() {
@@ -41,18 +43,22 @@ abstract public class Entity {
         return maxHP;
     }
 
+    public int getAction(){
+        return action;
+    }
+
     public void setHitPoint(int hitPoint) {
         this.hitPoint = hitPoint;
     }
 
-    public boolean isAlive() {
-        if(this.hitPoint > 0) {
-            return true;
-        }
-        return false;
+    public void setAction(int action){
+        this.action = action;
     }
 
-    abstract public void attack(Player p, Monster m);
+    public boolean isAlive() {
+        return this.hitPoint > 0;
+    }
+
     // https://www.redblobgames.com/articles/probability/damage-rolls.html
 
 

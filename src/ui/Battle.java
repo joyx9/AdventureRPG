@@ -1,122 +1,187 @@
 package ui;
 
-
-import model.Inventory;
+import exceptions.InvalidInputException;
 import model.ListOfPlayers;
+import model.MainPlayer;
 import model.Monster;
 import model.Player;
-import ui.exceptions.HPOutOfBoundsException;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
-//question: how to access an object made in another class?
-
 public class Battle {
-    Scanner scanner = new Scanner(System.in);
-    private int damage = 0;
-    private int hitPoint = 0;
-
+    private GamePath data;
+    private MainPlayer yourPlayer;
+    private ListOfPlayers team;
     private Monster monster;
-    private Player yourPlayer;
+    private int inputAction;
+    private boolean noNameFound = true;
 
-    //TODO: find out how to do a proper RPG style turn input of players :/
-    public Battle(ListOfPlayers team, GamePath data) throws HPOutOfBoundsException {
-        monster = new Monster("Slime", 20,2,2);
 
-        yourPlayer = team.getPlayer(1);
+
+    public Battle(GamePath data) {
+        this.data = data;
+        initializeBattle();
+
+        while(yourPlayer.isAlive() && monster.isAlive()){
+            for(int i = 0; i < team.getSizeListOfPlayers(); i++) {
+//                Scanner playerInput = new Scanner(System.in);
+                Player currentPlayer = team.getPlayer(i);
+                if(currentPlayer.isAlive()){
+                    do{
+                        try{
+                            inputPlayerAction(currentPlayer);
+                        }
+                        catch(InputMismatchException e) {
+                            System.out.println("Huh? That wasn't one of the options...");
+                        }
+                    } while (invalidAction(inputAction));
+
+//                    System.out.println(currentPlayer.getName() + " has "+currentPlayer.getHitPoint() +
+//                            " HP. " + currentPlayer.getName() + " may: [1]attack, [2]examine, [3]heal");
+//                    inputAction = playerInput.nextInt();
+//
+//                    //inputAction != 1, 2, or 3
+//                    while(invalidAction(inputAction)){
+//                        System.out.println("What are you doing?? Try again:");
+//                        System.out.println(currentPlayer.getName() + " has "+currentPlayer.getHitPoint() +
+//                                " HP. " + currentPlayer.getName() + " may: [1]attack, [2]examine, [3]heal");
+//                        inputAction = playerInput.nextInt();
+//                    }
+                }
+            }
+            oneRoundBattle();
+        }
+        battleEnd();
+    }
+
+    //MODIFIES: monster, team
+    //EFFECTS: sets up battlefield with one monster and team from GamePath
+    //         sorts the team by speed
+    public void initializeBattle(){
+        monster = new Monster("Slime", 20,3, 2);
+        monster.setAction(1);
+        team = data.getTeamFromPath();
+        yourPlayer = data.getYourPlayerFromPath();
         team.sortBySpeed();
 
-        int action = 0;
         System.out.println("Enemy monster appeared! What will we do? ");
         System.out.println("Time to engage!");
-        while(yourPlayer.isAlive() && monster.isAlive() && action != 3){
-            //sort ListOfPlayer by speed, then input commands for each player.
-            team.sortBySpeed();
+    }
 
-            for(int i = 0; i < team.getSizeListOfPlayer(); i++) {
-                Player currentPlayer = team.getPlayer(i);
+    //MODIFIES: currentPlayer
+    //EFFECTS: user chooses what action a living player will execute by inputting available options into console
+    //         if user tries to input a non existing option, an InvalidInputException is thrown
+    public void inputPlayerAction(Player currentPlayer) throws InvalidInputException {
+        Scanner playerInput = new Scanner(System.in);
+        System.out.println(currentPlayer.getName() + " has "+currentPlayer.getHitPoint() +
+                " HP. " + currentPlayer.getName() + " may: [1]attack, [2]examine, [3]heal");
+        inputAction = playerInput.nextInt();
 
-                if ((currentPlayer.getName()).equals(yourPlayer.getName())) {
-                    System.out.println(currentPlayer.getName() + " has "+currentPlayer.getHitPoint() +
-                            " HP. " + currentPlayer.getName() + " may: [1]attack, [2]examine, or [3]flee");
+        if(invalidAction(inputAction)){
+            throw new InvalidInputException();
+        }
+        else{
+            currentPlayer.setAction(inputAction);
+        }
+    }
 
-                    action = scanner.nextInt();
+    //EFFECTS: each player in team will execute their respective action if they are alive
+    private void executeTurn(){
+        for(int i = 0; i < team.getSizeListOfPlayers(); i++) {
+            Player currentPlayer = team.getPlayer(i);
+            if(monster.isAlive() && currentPlayer.isAlive()){
+                actionInTurn(currentPlayer, currentPlayer.getAction());
+            }
+            if(!currentPlayer.isAlive()){
+                System.out.println(currentPlayer.getName() + " is unconscious!");
+            }
+        }
+    }
 
-                    if(action == 1){
-                        currentPlayer.attack(currentPlayer, monster);
-                        if(monster.isAlive()){
-                            monster.attack(currentPlayer, monster);
-                        }
-                        else {
-                            System.out.println("The monster was defeated.");
-                            break;
-                        }
+    //MODIFIES: Player unlucky
+    //EFFECTS: monster chooses a random player to attack
+    //         if partner is dead, will attack yourPlayer
+    //         note: this method only works because there is only one other player besides yourPlayer
+    private void monsterTurn(){
+        Player unlucky;
+        if(team.areAllPlayersAlive()){
+            unlucky = team.getRandomPlayer();
+        }
+        else{
+            unlucky = yourPlayer;
+        }
+        monster.attack(unlucky);
+        if(!unlucky.isAlive()){
+            System.out.println(unlucky.getName() + " was knocked out!");
+        }
+    }
 
-                    }
-
-                    else if(action == 2){
-                        currentPlayer.examine(monster);
-                        monster.attack(currentPlayer,monster);
-                    }
-
-                    else System.out.println("You ran away! Maybe another day you'll defeat it...");
-                }
-
-                else {
-                    if(currentPlayer.isAlive()) {
-                        System.out.println(currentPlayer.getName() + " has "+currentPlayer.getHitPoint() +
-                                " HP. " + currentPlayer.getName() + " may: [1]attack, [2]heal " + yourPlayer.getName());
-
-                        action = scanner.nextInt();
-
-                        if(action == 1){
-                            currentPlayer.attack(currentPlayer, monster);
-                            if(monster.getHitPoint() > 0){
-                                monster.attack(currentPlayer, monster);
-                            }
-                            else {
-                                System.out.println("Woohoo! " + currentPlayer.getName()+ " defeated the monster!");
-                                break;
-                            }
-
-                        }
-                        //chose heal option
-                        else {
-                            try{
-                                currentPlayer.playerHeal(yourPlayer);
-                            }
-                            catch(HPOutOfBoundsException e) {
-                                System.out.println(yourPlayer.getName() + " was healed for " +
-                                        Integer.toString(yourPlayer.getMaxHP() - yourPlayer.getHitPoint()) +
-                                        " points!");
-                                yourPlayer.setHitPoint(yourPlayer.getMaxHP());
-                            }
-                            finally{
-                                monster.attack(currentPlayer, monster);
-                            }
-                        }
-                    }
-                    if (!currentPlayer.isAlive()) {
-                        System.out.println(currentPlayer.getName() + " is knocked out!");
-                    }
+    //EFFECTS: player executes action: attack, examine, or heal
+    private void actionInTurn(Player currentPlayer, int action){
+        if(action == 1){
+            currentPlayer.attack(monster);
+            if(!monster.isAlive()){
+                System.out.println("Hurray! " + currentPlayer.getName() + " defeated the monster!");
+            }
+        }
+        else if(action == 2){
+            currentPlayer.examine(monster);
+        }
+        else if(action == 3) {
+            do {
+                try {
+                    healAction(currentPlayer);
+                } catch (InvalidInputException e) {
+                    System.out.println("No one has that name!?");
                 }
 
             }
+            while(noNameFound);
         }
+    }
 
-
-        if(!yourPlayer.isAlive()){
-
+    //EFFECTS: user selects which player will get healed by currentPlayer
+    //         if user inputs a name that doesn't exist, an InvalidInputException is thrown
+    private void healAction(Player currentPlayer) throws InvalidInputException {
+        System.out.println("Who would " + currentPlayer.getName() + " like to heal? Enter their name:");
+        Scanner healWho = new Scanner(System.in);
+        String healPlayer = healWho.nextLine();
+        for (int i = 0; i < team.getSizeListOfPlayers(); i++) {
+            Player needsHealing = team.getPlayer(i);
+            if (needsHealing.getName().equals(healPlayer)) {
+                noNameFound = false;
+                currentPlayer.playerHeal(needsHealing);
+            }
         }
-
-        if(monster.getHitPoint() < 0){
-            inventory = data.getInventory();
-            inventory.addItem(monster.getMonsterDrop());
-            System.out.println("You found " + (monster.getMonsterDrop()).getItemName() + "!");
+        if(noNameFound){
+            throw new InvalidInputException();
         }
+    }
 
+    //EFFECTS: one round of battle
+    private void oneRoundBattle(){
+        executeTurn();
+        if(monster.isAlive()){
+            monsterTurn();
+        }
+    }
 
+    //EFFECTS: result of the battle
+    private void battleEnd(){
+        if(!monster.isAlive()){
+            System.out.println("You got: " + monster.getMonsterDrop().getItemName() + "!");
+            yourPlayer.getInventory().addItem(monster.getMonsterDrop());
+        }
+        else if(!yourPlayer.isAlive()){
+            System.out.println("(Hogh...you draw your last breath at the monster's final blow...)");
+            System.out.println("(Should've stayed in school...)");
+        }
+    }
 
+    //EFFECTS: if user inputs an unavailable action, returns false
+    private boolean invalidAction(int input){
+        return (input != 1 && input != 2 && input != 3);
     }
 
 
