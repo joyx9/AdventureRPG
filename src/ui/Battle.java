@@ -25,7 +25,6 @@ public class Battle {
 
         while(yourPlayer.isAlive() && monster.isAlive()){
             for(int i = 0; i < team.getSizeListOfPlayers(); i++) {
-//                Scanner playerInput = new Scanner(System.in);
                 Player currentPlayer = team.getPlayer(i);
                 if(currentPlayer.isAlive()){
                     do{
@@ -36,18 +35,6 @@ public class Battle {
                             System.out.println("Huh? That wasn't one of the options...");
                         }
                     } while (invalidAction(inputAction));
-
-//                    System.out.println(currentPlayer.getName() + " has "+currentPlayer.getHitPoint() +
-//                            " HP. " + currentPlayer.getName() + " may: [1]attack, [2]examine, [3]heal");
-//                    inputAction = playerInput.nextInt();
-//
-//                    //inputAction != 1, 2, or 3
-//                    while(invalidAction(inputAction)){
-//                        System.out.println("What are you doing?? Try again:");
-//                        System.out.println(currentPlayer.getName() + " has "+currentPlayer.getHitPoint() +
-//                                " HP. " + currentPlayer.getName() + " may: [1]attack, [2]examine, [3]heal");
-//                        inputAction = playerInput.nextInt();
-//                    }
                 }
             }
             oneRoundBattle();
