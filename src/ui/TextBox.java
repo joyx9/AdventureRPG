@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 public class TextBox extends JPanel implements ActionListener {
     protected JTextArea textArea;
     protected JTextField userInput;
+    protected JButton submit;
 
     public TextBox(){
         super(new GridBagLayout());
@@ -25,8 +26,9 @@ public class TextBox extends JPanel implements ActionListener {
         userInput.setFont(font);
         userInput.setBackground(Color.DARK_GRAY);
         userInput.setForeground(Color.LIGHT_GRAY);
-        userInput.addActionListener(this);
 
+        submit = new JButton("Next");
+        submit.addActionListener(this);
 
 
         //Add Components to this panel.
@@ -38,8 +40,8 @@ public class TextBox extends JPanel implements ActionListener {
         c.weighty = 1.0;
         add(textArea, c);
 
-        c.fill = GridBagConstraints.HORIZONTAL;
         add(userInput, c);
+        add(submit, c);
 
     }
 

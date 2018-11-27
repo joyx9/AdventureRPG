@@ -1,90 +1,175 @@
 package ui;
 
-import exceptions.InvalidInputException;
-import model.ListOfPlayers;
-import model.MainPlayer;
-import model.Monster;
-import model.Player;
+import model.*;
 
-import java.util.InputMismatchException;
-import java.util.Scanner;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class Battle {
+public class Battle implements ActionListener {
     private GamePath data;
+    private StatusBar sb;
+
     private MainPlayer yourPlayer;
+    private PlayerEve evePC;
     private ListOfPlayers team;
     private Monster monster;
-    private int inputAction;
+    protected int inputAction;
     private boolean noNameFound = true;
 
+    private JTextArea textArea;
+    private JTextField userInput;
+    private JPanel buttonPanel;
+
+    private JButton submit;
+    private JButton attackBtn;
+    private JButton examineBtn;
+    private JButton healSelfBtn;
+    private JButton healEveBtn;
+
+    private boolean turnSetUp = true;
 
 
     public Battle(GamePath data) {
         this.data = data;
-        initializeBattle();
 
-        while(yourPlayer.isAlive() && monster.isAlive()){
-            for(int i = 0; i < team.getSizeListOfPlayers(); i++) {
-                Player currentPlayer = team.getPlayer(i);
-                if(currentPlayer.isAlive()){
-                    do{
-                        try{
-                            inputPlayerAction(currentPlayer);
-                        }
-                        catch(InputMismatchException e) {
-                            System.out.println("Huh? That wasn't one of the options...");
-                        }
-                    } while (invalidAction(inputAction));
-                }
-            }
-            oneRoundBattle();
-        }
-        battleEnd();
+        submit = data.getSubmit();
+        userInput = data.getUserInput();
+        submit.setVisible(false);
+        userInput.setVisible(false);
+        createButtons();
+
+        data.repaint();
+
+        textArea = data.getTextArea();
+
+        initializeBattle();
     }
 
+    public void createButtons(){
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        sb = new StatusBar(data);
+        data.add(sb, c);
+
+        attackBtn = new JButton("Attack");
+        examineBtn = new JButton("Examine");
+        healSelfBtn = new JButton("Heal Self");
+        healEveBtn = new JButton("Heal Eve");
+
+        attackBtn.setActionCommand("attack");
+        examineBtn.setActionCommand("examine");
+        healSelfBtn.setActionCommand("healself");
+        healEveBtn.setActionCommand("healeve");
+
+        attackBtn.addActionListener(this);
+        examineBtn.addActionListener(this);
+        healSelfBtn.addActionListener(this);
+        healEveBtn.addActionListener(this);
+
+        buttonPanel = new JPanel();
+        buttonPanel.add(attackBtn);
+        buttonPanel.add(examineBtn);
+        buttonPanel.add(healSelfBtn);
+        buttonPanel.add(healEveBtn);
+        data.add(buttonPanel);
+
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if(battleGoingOn()){
+            if("attack".equals(e.getActionCommand())){
+                textArea.setText(yourPlayer.attack(monster));
+                if(!monster.isAlive()){
+                    monsterDefeatText(yourPlayer);
+                    battleEnd();
+                }
+                else
+                    afterPlayerTurn();
+            }
+            else if("examine".equals(e.getActionCommand())){
+                textArea.setText(yourPlayer.examine(monster));
+                afterPlayerTurn();
+            }
+            else if("healself".equals(e.getActionCommand())){
+                textArea.setText(yourPlayer.playerHeal(yourPlayer));
+                afterPlayerTurn();
+            }
+            else{
+                textArea.setText(yourPlayer.playerHeal(evePC));
+                afterPlayerTurn();
+            }
+            sb.update();
+        }
+        else {
+            battleEnd();
+        }
+        userInput.setText("");
+    }
     //MODIFIES: monster, team
     //EFFECTS: sets up battlefield with one monster and team from GamePath
     //         sorts the team by speed
     public void initializeBattle(){
-        monster = new Monster("Slime", 20,3, 2);
+        monster = new Monster("Slime", 50,2, 2, " Gooey and green." +
+                " It oozes with hostility...or something.");
         monster.setAction(1);
         team = data.getTeamFromPath();
         yourPlayer = data.getYourPlayerFromPath();
+        evePC = data.getEvePC();
         team.sortBySpeed();
 
-        System.out.println("Enemy monster appeared! What will we do? ");
-        System.out.println("Time to engage!");
+        textArea.setText(" Woah! Enemy monster appeared! What will we do? ");
+        textArea.append("\n Time to engage!");
+        textArea.append(playerStatusText());
     }
 
-    //MODIFIES: currentPlayer
-    //EFFECTS: user chooses what action a living player will execute by inputting available options into console
-    //         if user tries to input a non existing option, an InvalidInputException is thrown
-    public void inputPlayerAction(Player currentPlayer) throws InvalidInputException {
-        Scanner playerInput = new Scanner(System.in);
-        System.out.println(currentPlayer.getName() + " has "+currentPlayer.getHitPoint() +
-                " HP. " + currentPlayer.getName() + " may: [1]attack, [2]examine, [3]heal");
-        inputAction = playerInput.nextInt();
+    private String playerStatusText(){
+        return ("\n " + yourPlayer.getName() + " has " + yourPlayer.getHitPoint() + " HP! ");
+    }
 
-        if(invalidAction(inputAction)){
-            throw new InvalidInputException();
+    private void eveTurn(){
+        if(evePC.isAlive()){
+            if(evePC.getHitPoint() < 5){
+                textArea.append("\n" + evePC.playerHeal(evePC));
+            }
+            else if(yourPlayer.getHitPoint() > yourPlayer.getMaxHP()/2){
+                textArea.append("\n" + evePC.attack(monster));
+                if(!monster.isAlive()){
+                    monsterDefeatText(evePC);
+                    battleEnd();
+                }
+            }
+            else{
+                textArea.append("\n" + evePC.playerHeal(yourPlayer));
+            }
         }
         else{
-            currentPlayer.setAction(inputAction);
+            textArea.append("\n Eve is unconscious and cannot take action!");
+        }
+
+    }
+    private void monsterDefeatText(Player currentPlayer){
+        textArea.append(" \n Hurray! " + currentPlayer.getName() + " defeated the monster!");
+    }
+
+    public boolean battleGoingOn(){
+        return (yourPlayer.isAlive() && monster.isAlive());
+    }
+
+    public void afterPlayerTurn(){
+        eveTurn();
+        if(monster.isAlive()){
+            monsterTurn();
+        }
+        if(!yourPlayer.isAlive()){
+            battleEnd();
         }
     }
 
-    //EFFECTS: each player in team will execute their respective action if they are alive
-    private void executeTurn(){
-        for(int i = 0; i < team.getSizeListOfPlayers(); i++) {
-            Player currentPlayer = team.getPlayer(i);
-            if(monster.isAlive() && currentPlayer.isAlive()){
-                actionInTurn(currentPlayer, currentPlayer.getAction());
-            }
-            if(!currentPlayer.isAlive()){
-                System.out.println(currentPlayer.getName() + " is unconscious!");
-            }
-        }
-    }
+
 
     //MODIFIES: Player unlucky
     //EFFECTS: monster chooses a random player to attack
@@ -98,78 +183,31 @@ public class Battle {
         else{
             unlucky = yourPlayer;
         }
-        monster.attack(unlucky);
+        textArea.append(monster.attack(unlucky));
         if(!unlucky.isAlive()){
-            System.out.println(unlucky.getName() + " was knocked out!");
-        }
-    }
-
-    //EFFECTS: player executes action: attack, examine, or heal
-    private void actionInTurn(Player currentPlayer, int action){
-        if(action == 1){
-            currentPlayer.attack(monster);
-            if(!monster.isAlive()){
-                System.out.println("Hurray! " + currentPlayer.getName() + " defeated the monster!");
-            }
-        }
-        else if(action == 2){
-            currentPlayer.examine(monster);
-        }
-        else if(action == 3) {
-            do {
-                try {
-                    healAction(currentPlayer);
-                } catch (InvalidInputException e) {
-                    System.out.println("No one has that name!?");
-                }
-
-            }
-            while(noNameFound);
-        }
-    }
-
-    //EFFECTS: user selects which player will get healed by currentPlayer
-    //         if user inputs a name that doesn't exist, an InvalidInputException is thrown
-    private void healAction(Player currentPlayer) throws InvalidInputException {
-        System.out.println("Who would " + currentPlayer.getName() + " like to heal? Enter their name:");
-        Scanner healWho = new Scanner(System.in);
-        String healPlayer = healWho.nextLine();
-        for (int i = 0; i < team.getSizeListOfPlayers(); i++) {
-            Player needsHealing = team.getPlayer(i);
-            if (needsHealing.getName().equals(healPlayer)) {
-                noNameFound = false;
-                currentPlayer.playerHeal(needsHealing);
-            }
-        }
-        if(noNameFound){
-            throw new InvalidInputException();
-        }
-    }
-
-    //EFFECTS: one round of battle
-    private void oneRoundBattle(){
-        executeTurn();
-        if(monster.isAlive()){
-            monsterTurn();
+            textArea.append("\n " + unlucky.getName() + " was knocked out!");
         }
     }
 
     //EFFECTS: result of the battle
-    private void battleEnd(){
+    private void battleResult(){
         if(!monster.isAlive()){
-            System.out.println("You got: " + monster.getMonsterDrop().getItemName() + "!");
+            textArea.append("\n You got: " + monster.getMonsterDrop().getItemName() + "!");
             yourPlayer.getInventory().addItem(monster.getMonsterDrop());
         }
         else if(!yourPlayer.isAlive()){
-            System.out.println("(Hogh...you draw your last breath at the monster's final blow...)");
-            System.out.println("(Should've stayed in school...)");
+            textArea.setText(" (Hogh...you draw your last breath at the monster's final blow...)");
+            textArea.append("\n (Should've stayed in school...)");
         }
     }
 
-    //EFFECTS: if user inputs an unavailable action, returns false
-    private boolean invalidAction(int input){
-        return (input != 1 && input != 2 && input != 3);
+    private void battleEnd(){
+        battleResult();
+        data.remove(buttonPanel);
+        data.remove(sb);
+        submit.setVisible(true);
+        userInput.setVisible(true);
+        data.repaint();
     }
-
 
 }

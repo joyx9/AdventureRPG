@@ -1,5 +1,6 @@
 package model;
 
+
 import java.util.Random;
 
 abstract public class Entity {

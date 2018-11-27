@@ -3,6 +3,7 @@ package model;
 import ui.TextBox;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -108,14 +109,14 @@ public class Inventory extends TextBox implements ActionListener{
 
         inventoryFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         inventoryFrame.add(this);
-        inventoryFrame.setPreferredSize(new Dimension(800,400));
+        inventoryFrame.setPreferredSize(new Dimension(800,300));
         inventoryFrame.pack();
         inventoryFrame.setVisible(true);
         textArea.setText(" Enter name of item category to see all items\n in that list " +
                 "or name of item to check\n its description, or 'all' or 'quit'");
     }
 
-    public void checkInventory(String command){
+    private void checkInventory(String command){
 
             if(command.equals("quit")){
                 inventoryFrame.dispose();
@@ -135,12 +136,18 @@ public class Inventory extends TextBox implements ActionListener{
                         "or name of item to check\n its description, or 'all' or 'quit'");
             }
             else{
+                boolean foundItem = false;
                 for (Map.Entry<String, ArrayList<Item>> i : itemMap.entrySet()) {
                     ArrayList<Item> itemsInCategory = i.getValue();
                     for (Item item : itemsInCategory)
                         if(item.getItemName().equals(command)){
+                            foundItem = true;
                             textArea.setText(" "+item.getDescription());
                         }
+                }
+                if(!foundItem){
+                    textArea.setText(" Enter name of item category to see all items\n in that list " +
+                            "or name of item to check\n its description, or 'all' or 'quit'");
                 }
             }
 

@@ -10,22 +10,21 @@ public class Player extends Entity {
     }
 
 
-
     // MODIFIES: m
     // EFFECTS: monsters hp lowers by value of player's attack
     //          player attack is their base damage + 1d6
-    public void attack(Monster m) {
+    public String attack(Monster m) {
         //generate random damage for attack
         int damage = this.getDamage() + 1 + rm.nextInt(6);
         m.setHitPoint(m.getHitPoint()-damage);
-        System.out.println(this.getName()+" attacked the monster! Dealt " + damage +" damage!");
+        return (" " + this.getName()+" attacked the monster! Dealt " + damage +" damage!");
     }
 
     // MODIFIES: healed
     // EFFECTS: healer player increases hp of healed player by heal value if healed player's HP does not go over maxHP
     //          otherwise, throws HPOutOfBoundsException
     //          heal value is healer's base damage + 1d4
-    public void playerHeal(model.Player healed) {
+    public String playerHeal(Player healed) {
         int heal = this.getDamage() + 1 + rm.nextInt(4);
 
         if (healed.getHitPoint() + heal > healed.getMaxHP()){
@@ -35,16 +34,17 @@ public class Player extends Entity {
         else
             healed.setHitPoint(healed.getHitPoint() + heal);
 
-        System.out.println(healed.getName() +" was healed for " + heal + " points! " +
+        return (" " + this.getName() +" healed " + healed.getName() + " for " + heal + " points! \n " +
                 healed.getName() +" now has " + healed.getHitPoint() +" HP.");
 
 
     }
 
     // EFFECTS: returns monster's hp and name in dialogue
-    public void examine(Monster m) {
-        System.out.println(this.getName() + " examined the monster.");
-        System.out.println("It's a " + m.getName() + "! It appears to have " + m.getHitPoint() + " HP left.");
+    public String examine(Monster m) {
+        return(" " + this.getName() + " examined the monster.\n" +
+                " It's a " + m.getName() + "! It appears to have " + m.getHitPoint() + " HP left. \n"+
+                m.getMonsterDescription());
     }
 
 

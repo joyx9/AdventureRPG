@@ -1,5 +1,7 @@
 package model;
 
+import ui.Battle;
+
 import java.util.Objects;
 
 public class MainPlayer extends Player {

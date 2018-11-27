@@ -3,6 +3,7 @@ package tests;
 import model.ListOfPlayers;
 import model.MainPlayer;
 import model.Player;
+import model.PlayerEve;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +30,7 @@ public class TestListOfPlayers {
     @Test
     public void testSizeOfPlayerList(){
         MainPlayer a = new MainPlayer("a", 1,1,3);
-        Player b = new Player("b", 1,1,2);
+        PlayerEve b = new PlayerEve("b", 1,1,2);
         Player c = new Player("c", 1,1,5);
 
         team.addPlayer(a);
