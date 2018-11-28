@@ -15,8 +15,6 @@ public class Battle implements ActionListener {
     private PlayerEve evePC;
     private ListOfPlayers team;
     private Monster monster;
-    protected int inputAction;
-    private boolean noNameFound = true;
 
     private JTextArea textArea;
     private JTextField userInput;
@@ -102,6 +100,13 @@ public class Battle implements ActionListener {
                 afterPlayerTurn();
             }
             sb.update();
+            if(!evePC.isAlive()){
+                data.setIsEveAlive(evePC.isAlive());
+            }
+            else{
+                data.setIsEveAlive(evePC.isAlive());
+            }
+            data.repaint();
         }
         else {
             battleEnd();
@@ -130,7 +135,7 @@ public class Battle implements ActionListener {
 
     private void eveTurn(){
         if(evePC.isAlive()){
-            if(evePC.getHitPoint() < 5){
+            if(evePC.getHitPoint() < 3){
                 textArea.append("\n" + evePC.playerHeal(evePC));
             }
             else if(yourPlayer.getHitPoint() > yourPlayer.getMaxHP()/2){
@@ -185,10 +190,7 @@ public class Battle implements ActionListener {
         if(!unlucky.isAlive()){
             textArea.append("\n " + unlucky.getName() + " was knocked out!");
         }
-        if(!evePC.isAlive()){
-            data.setIsEveAlive(evePC.isAlive());
-            data.repaint();
-        }
+
     }
 
     //EFFECTS: result of the battle

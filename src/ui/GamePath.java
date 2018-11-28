@@ -12,7 +12,6 @@ public class GamePath extends TextBox implements ActionListener {
     private MainPlayer yourPlayer;
     private PlayerEve evePC;
     private ListOfPlayers team;
-    private Battle battle;
 
     private String yourName;
     private int action;
@@ -81,7 +80,7 @@ public class GamePath extends TextBox implements ActionListener {
     public void pathChoice(int action){
         if(action == 1){
             battleGoingOn = true;
-            battle = new Battle(this);
+            new Battle(this);
         }
         else if (action == 2) {
             yourPlayer.getInventory().checkInventory();
@@ -151,18 +150,16 @@ public class GamePath extends TextBox implements ActionListener {
         return isMCAlive;
     }
 
-
     public void setIsMCAlive(boolean isMCAlive){
         this.isMCAlive = isMCAlive;
     }
 
     public boolean isEveAlive(){
-        return isMCAlive;
+        return isEveAlive;
     }
 
-
-    public void setIsEveAlive(boolean isMCAlive){
-        this.isMCAlive = isMCAlive;
+    public void setIsEveAlive(boolean isEveAlive){
+        this.isEveAlive = isEveAlive;
     }
 
 
