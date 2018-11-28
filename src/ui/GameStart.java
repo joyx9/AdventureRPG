@@ -17,8 +17,8 @@ public class GameStart extends JFrame{
 
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
-        gp = new GamePanel();
         game = new GamePath();
+        gp = new GamePanel(game);
 
         add(gp);
         add(game, BorderLayout.SOUTH);

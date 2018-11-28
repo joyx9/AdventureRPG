@@ -20,15 +20,14 @@ public class GamePath extends TextBox implements ActionListener {
     private PlayerEve evePC;
     private ListOfPlayers team;
 
-//    protected JTextArea textArea;
-//    protected JTextField userInput;
-//    protected JButton submit;
     private String yourName;
     private int action;
 
     private boolean gameIntro = true;
     private boolean onPathMenu = true;
     private boolean inventoryMenu = true;
+    private boolean battleGoingOn = false;
+
 
     public GamePath(){
         gameIntroText();
@@ -38,11 +37,20 @@ public class GamePath extends TextBox implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if(gameIntro){
             addEve();
-            yourName = userInput.getText();
-            textArea.setText(" Hi, " + yourName +"! Remember, there are quite a few monsters about, " +
-                    "so keep your guard up, okay?");
-            initializeMainPlayer();
-            gameIntro = false;
+            try{
+                if(!userInput.getText().equals("")){
+                    yourName = userInput.getText();
+                    textArea.setText(" Eve: Hi, " + yourName +"! Remember, there are quite a few monsters about, " +
+                            "so keep your guard up, okay?");
+                    initializeMainPlayer();
+                    gameIntro = false;
+                }
+                else
+                    throw new InvalidInputException();
+            }
+            catch (InvalidInputException error){
+                gameIntroText();
+            }
         }
         else if(onPathMenu){
             pathMenuText();
@@ -62,14 +70,14 @@ public class GamePath extends TextBox implements ActionListener {
     }
 
     public void gameIntroText(){
-        textArea.setText(" Hello, adventurer! Welcome to your first day of exploration!");
-        textArea.append("\n My name's Eve. I'll be helping you along the way today.");
-        textArea.append("\n What's your name?");
+        textArea.setText(" ???: Hello, adventurer! Welcome to your first day of exploration!");
+        textArea.append("\n Eve: My name's Eve. I'll be helping you along the way today.");
+        textArea.append("\n Eve: What's your name?");
         textArea.append("\n\n (Type your name and press next to input your command!)");
     }
 
     public void pathMenuText(){
-        textArea.setText(" (What would you like to do?)");
+        textArea.setText(" Eve: What would you like to do?");
         textArea.append("\n >[1] Move forward");
         textArea.append("\n >[2] Check Inventory");
         textArea.append("\n >[3] Quit");
@@ -81,9 +89,9 @@ public class GamePath extends TextBox implements ActionListener {
         // EFFECTS: executes choice depending on user input of an int
     public void pathChoice(int action){
         if(action == 1){
+            battleGoingOn = true;
             new Battle(this);
             onPathMenu = true;
-            this.action = 0;
         }
         else if (action == 2) {
             onPathMenu = true;
@@ -136,5 +144,21 @@ public class GamePath extends TextBox implements ActionListener {
     public PlayerEve getEvePC() {return evePC; }
 
     public JButton getSubmit(){ return submit;}
+
+    public void setBattleGoingOn(boolean battleGoingOn){
+        this.battleGoingOn = battleGoingOn;
+    }
+
+    public boolean getBattleGoingOn(){
+        return battleGoingOn;
+    }
+
+    public void setAction(int i){
+        this.action = i;
+    }
+
+
+
+
 }
 

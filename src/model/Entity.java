@@ -9,7 +9,6 @@ abstract public class Entity {
     private int speed;
     private String name;
     private int maxHP;
-    private int action;
 
     protected Random rm = new Random();
 
@@ -21,7 +20,6 @@ abstract public class Entity {
         this.name = name;
 
         maxHP = hitPoint;
-        action = 0;
     }
 
     public String getName() {
@@ -44,16 +42,8 @@ abstract public class Entity {
         return maxHP;
     }
 
-    public int getAction(){
-        return action;
-    }
-
     public void setHitPoint(int hitPoint) {
         this.hitPoint = hitPoint;
-    }
-
-    public void setAction(int action){
-        this.action = action;
     }
 
     public boolean isAlive() {

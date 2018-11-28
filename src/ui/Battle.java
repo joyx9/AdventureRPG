@@ -28,7 +28,6 @@ public class Battle implements ActionListener {
     private JButton healSelfBtn;
     private JButton healEveBtn;
 
-    private boolean turnSetUp = true;
 
 
     public Battle(GamePath data) {
@@ -115,7 +114,6 @@ public class Battle implements ActionListener {
     public void initializeBattle(){
         monster = new Monster("Slime", 50,2, 2, " Gooey and green." +
                 " It oozes with hostility...or something.");
-        monster.setAction(1);
         team = data.getTeamFromPath();
         yourPlayer = data.getYourPlayerFromPath();
         evePC = data.getEvePC();
@@ -194,10 +192,12 @@ public class Battle implements ActionListener {
         if(!monster.isAlive()){
             textArea.append("\n You got: " + monster.getMonsterDrop().getItemName() + "!");
             yourPlayer.getInventory().addItem(monster.getMonsterDrop());
+            data.setAction(0);
         }
         else if(!yourPlayer.isAlive()){
             textArea.setText(" (Hogh...you draw your last breath at the monster's final blow...)");
             textArea.append("\n (Should've stayed in school...)");
+            data.setAction(3);
         }
     }
 
@@ -207,7 +207,10 @@ public class Battle implements ActionListener {
         data.remove(sb);
         submit.setVisible(true);
         userInput.setVisible(true);
+        data.setBattleGoingOn(false);
         data.repaint();
     }
+
+
 
 }
