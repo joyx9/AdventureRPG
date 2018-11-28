@@ -1,5 +1,6 @@
 package ui;
 
+
 import model.PlayerEve;
 
 import javax.imageio.ImageIO;
@@ -28,13 +29,21 @@ public class GamePanel extends JPanel{
         super.paintComponent(g);
         if(!gp.getBattleGoingOn()){
             g.drawImage(backgroudImgGray,0,0,this);
-            g.drawImage(evePortrait,20,0,this);
+            if(gp.isMCAlive()) {
+                g.drawImage(evePortrait, 20, 0, this);
+            }
         }
         else{
             g.drawImage(backgroundImg,0,0,this);
             g.drawImage(mcSprite,505,130,this);
-            g.drawImage(eveSprite,610,160,this);
             g.drawImage(slimeSprite,90,165, this);
+            if(gp.isEveAlive()){
+                g.drawImage(eveSprite,610,160,this);
+            }
+            else{
+                g.drawImage(eveSpriteDown,610,160,this);
+            }
+            repaint();
         }
 
 

@@ -1,7 +1,6 @@
 package model;
 
 
-import ui.Battle;
 
 public class Monster extends Entity {
     private Item monsterDrop;

@@ -4,8 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
+
 
 public class TextBox extends JPanel implements ActionListener {
     protected JTextArea textArea;
@@ -60,5 +59,6 @@ public class TextBox extends JPanel implements ActionListener {
         return userInput;
     }
 
-
+    //https://docs.oracle.com/javase/tutorial/uiswing/components/textfield.html
+    //TextDemo.java saved my life
 }

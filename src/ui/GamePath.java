@@ -4,27 +4,23 @@ import exceptions.InvalidInputException;
 import model.*;
 
 import javax.swing.*;
-import javax.xml.soap.Text;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.IOException;
-import java.util.InputMismatchException;
-import java.util.Scanner;
 
 public class GamePath extends TextBox implements ActionListener {
 
     private MainPlayer yourPlayer;
     private PlayerEve evePC;
     private ListOfPlayers team;
+    private Battle battle;
 
     private String yourName;
     private int action;
 
     private boolean gameIntro = true;
     private boolean battleGoingOn = false;
+    private boolean isMCAlive = true;
+    private boolean isEveAlive = true;
 
 
     public GamePath(){
@@ -85,7 +81,7 @@ public class GamePath extends TextBox implements ActionListener {
     public void pathChoice(int action){
         if(action == 1){
             battleGoingOn = true;
-            new Battle(this);
+            battle = new Battle(this);
         }
         else if (action == 2) {
             yourPlayer.getInventory().checkInventory();
@@ -150,6 +146,25 @@ public class GamePath extends TextBox implements ActionListener {
     public void setAction(int i){
         this.action = i;
     }
+
+    public boolean isMCAlive(){
+        return isMCAlive;
+    }
+
+
+    public void setIsMCAlive(boolean isMCAlive){
+        this.isMCAlive = isMCAlive;
+    }
+
+    public boolean isEveAlive(){
+        return isMCAlive;
+    }
+
+
+    public void setIsEveAlive(boolean isMCAlive){
+        this.isMCAlive = isMCAlive;
+    }
+
 
 
 

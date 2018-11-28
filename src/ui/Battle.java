@@ -185,6 +185,10 @@ public class Battle implements ActionListener {
         if(!unlucky.isAlive()){
             textArea.append("\n " + unlucky.getName() + " was knocked out!");
         }
+        if(!evePC.isAlive()){
+            data.setIsEveAlive(evePC.isAlive());
+            data.repaint();
+        }
     }
 
     //EFFECTS: result of the battle
@@ -198,6 +202,7 @@ public class Battle implements ActionListener {
             textArea.setText(" (Hogh...you draw your last breath at the monster's final blow...)");
             textArea.append("\n (Should've stayed in school...)");
             data.setAction(3);
+            data.setIsMCAlive(yourPlayer.isAlive());
         }
     }
 
@@ -210,7 +215,6 @@ public class Battle implements ActionListener {
         data.setBattleGoingOn(false);
         data.repaint();
     }
-
 
 
 }
