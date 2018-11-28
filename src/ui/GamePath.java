@@ -24,8 +24,6 @@ public class GamePath extends TextBox implements ActionListener {
     private int action;
 
     private boolean gameIntro = true;
-    private boolean onPathMenu = true;
-    private boolean inventoryMenu = true;
     private boolean battleGoingOn = false;
 
 
@@ -38,7 +36,7 @@ public class GamePath extends TextBox implements ActionListener {
         if(gameIntro){
             addEve();
             try{
-                if(!userInput.getText().equals("")){
+                if(userInput.getText().matches(".*[a-zA-Z].*")){
                     yourName = userInput.getText();
                     textArea.setText(" Eve: Hi, " + yourName +"! Remember, there are quite a few monsters about, " +
                             "so keep your guard up, okay?");
@@ -52,7 +50,7 @@ public class GamePath extends TextBox implements ActionListener {
                 gameIntroText();
             }
         }
-        else if(onPathMenu){
+        else {
             pathMenuText();
             try{
                 action = Integer.parseInt(userInput.getText());
@@ -60,12 +58,9 @@ public class GamePath extends TextBox implements ActionListener {
             catch(NumberFormatException error){
                 pathMenuText();
             }
-            onPathMenu = false;
             pathChoice(action);
         }
-        else if(inventoryMenu){
-            action = 0;
-        }
+
         userInput.setText("");
     }
 
@@ -91,17 +86,16 @@ public class GamePath extends TextBox implements ActionListener {
         if(action == 1){
             battleGoingOn = true;
             new Battle(this);
-            onPathMenu = true;
         }
         else if (action == 2) {
-            onPathMenu = true;
             yourPlayer.getInventory().checkInventory();
+            this.action = 0;
         }
         else if (action == 3){
             System.exit(0);
         }
         else{
-            onPathMenu = true;
+            this.action = 0;
         }
     }
 
