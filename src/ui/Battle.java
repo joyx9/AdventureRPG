@@ -201,7 +201,7 @@ public class Battle implements ActionListener {
             data.setAction(0);
         }
         else if(!yourPlayer.isAlive()){
-            textArea.setText(" (Hogh...you draw your last breath at the monster's final blow...)");
+            textArea.append("\n (Hogh...you draw your last breath at the monster's final blow...)");
             textArea.append("\n (Should've stayed in school...)");
             data.setAction(3);
             data.setIsMCAlive(yourPlayer.isAlive());

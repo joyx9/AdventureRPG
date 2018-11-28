@@ -33,7 +33,7 @@ public class GamePath extends TextBox implements ActionListener {
             try{
                 if(userInput.getText().matches(".*[a-zA-Z].*")){
                     yourName = userInput.getText();
-                    textArea.setText(" Eve: Hi, " + yourName +"! Remember, there are quite a few monsters about, " +
+                    textArea.setText(" Eve: Hi, " + yourName +"!\n Remember, there are quite a few monsters about, " +
                             "so keep your guard up, okay?");
                     initializeMainPlayer();
                     gameIntro = false;
